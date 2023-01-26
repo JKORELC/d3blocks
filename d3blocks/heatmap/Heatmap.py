@@ -99,7 +99,7 @@ def set_properties(df, config, node_properties, logger=None):  # pylint: disable
         df = _scale(df, vmax=config['vmax'], make_round=False, logger=logger)
     if config['vmax'] is None:
         config['vmax'] = np.max(df['weight'].values)
-        logger.debug('Set vmax: %.0g.' %(config['vmax']))
+        logger.debug('Set vmax: %.0g.' %(config['vmax']))  # pylint: disable=consider-using-f-string
 
     # Prepare the data
     json_data = get_data_ready_for_d3(df, node_properties)
@@ -119,6 +119,7 @@ def color_on_clusterlabel(adjmat, df, node_properties, config, logger):  # pylin
         results = ce.fit(adjmat.values)
         Iloc, idx = ismember(node_properties['label'].values, adjmat.index.values)  # pylint: disable=invalid-name
         if np.any(~Iloc):
+            # pylint: disable=consider-using-f-string
             logger.error('Feature name(s): %s can not be used. Hint: Remove special characters. <return>' %(df.index.values[~np.isin(np.arange(0, df.shape[0]), idx)]))
             return None
         node_properties['classlabel'] = np.zeros(node_properties.shape[0]).astype(int)
