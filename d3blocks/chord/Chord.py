@@ -168,7 +168,7 @@ def set_edge_properties(df, **kwargs):  # pylint: disable=invalid-name
         # Set to dataframe.
         if logger is not None: logger.info('Set edge-colors using the column "color" of the input DataFrame.')
         color = df['color'].values
-    elif (nodes is not None) and (isinstance(color, str)) and (color=='source' or color=='target'):
+    elif (nodes is not None) and (isinstance(color, str)) and (color in ('source', 'target')0):
         # Set to source or target node color.
         if logger is not None: logger.info('Set edge-colors based on the [%s] node-color.' %(color))
         df['color'] = '#000000'
