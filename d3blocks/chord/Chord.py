@@ -147,13 +147,15 @@ def set_edge_properties(df, **kwargs):  # pylint: disable=invalid-name
         # opacity = df['opacity'].values
     elif (nodes is not None) and isinstance(opacity, str) and (opacity in ('source', 'target')):
         # Set to source or target node color.
-        if logger is not None: logger.info('Set edge-opacity based on the [%s] node-opacity.' %(opacity))
+        if logger is not None:
+            logger.info('Set edge-opacity based on the [%s] node-opacity.' %(opacity))  # pylint: disable=consider-using-f-string
         df['opacity'] = 0.8
         for key in nodes.keys():
             df.loc[df[opacity]==key, 'opacity']=nodes.get(key)['opacity']
     elif isinstance(opacity, (int, float)):
         # In case one opacity is defined.
-        if logger is not None: logger.info('Set edge-opacity to [%s].' %(opacity))
+        if logger is not None:
+            logger.info('Set edge-opacity to [%s].' %(opacity))  # pylint: disable=consider-using-f-string
         df['opacity'] = opacity
     elif isinstance(opacity, (list, np.ndarray)) and (len(opacity)==df.shape[0]):
         if logger is not None: logger.info('Set edge-opacity to user defined input.')
@@ -171,13 +173,15 @@ def set_edge_properties(df, **kwargs):  # pylint: disable=invalid-name
         color = df['color'].values
     elif (nodes is not None) and (isinstance(color, str)) and (color in ('source', 'target')):
         # Set to source or target node color.
-        if logger is not None: logger.info('Set edge-colors based on the [%s] node-color.' %(color))
+        if logger is not None:
+            logger.info('Set edge-colors based on the [%s] node-color.' %(color))  # pylint: disable=consider-using-f-string
         df['color'] = '#000000'
         for key in nodes.keys():
             df.loc[df[color]==key, 'color'] = nodes.get(key)['color']
     elif isinstance(color, str) and (color[0]=='#') and (len(color)==7):
         # In case one hex color is defined.
-        if logger is not None: logger.info('Set all edge-colors to [%s].' %(color))
+        if logger is not None:
+            logger.info('Set all edge-colors to [%s].' %(color))  # pylint: disable=consider-using-f-string
         df['color'] = np.repeat(color, df.shape[0])
     elif isinstance(color, (list, np.ndarray)) and (len(color)==df.shape[0]):
         if logger is not None: logger.info('Set edge-colors to user defined input.')
