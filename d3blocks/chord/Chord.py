@@ -34,7 +34,7 @@ def set_config(config={}, **kwargs):
     return config
 
 
-def set_node_properties(df, **kwargs):
+def set_node_properties(df, **kwargs):  # pylint: disable=invalid-name
     """Set the node properties.
 
     Parameters
@@ -80,7 +80,7 @@ def set_node_properties(df, **kwargs):
 
 
 # %% Set Edge properties
-def set_edge_properties(df, **kwargs):
+def set_edge_properties(df, **kwargs):  # pylint: disable=invalid-name
     """Set the edge properties.
 
     Parameters
@@ -190,7 +190,7 @@ def set_edge_properties(df, **kwargs):
     return df
 
 
-def show(df, **kwargs):
+def show(df, **kwargs):  # pylint: disable=invalid-name
     """Show the Chord chart.
 
     Parameters
@@ -232,12 +232,12 @@ def show(df, **kwargs):
     df['source_id'] = list(map(lambda x: node_properties.get(x)['id'], df['source']))
     df['target_id'] = list(map(lambda x: node_properties.get(x)['id'], df['target']))
     # Create the data from the input of javascript
-    X = get_data_ready_for_d3(df, node_properties)
+    X = get_data_ready_for_d3(df, node_properties)  # pylint: disable=invalid-name
     # Write to HTML
     return write_html(X, config, logger=logger)
 
 
-def write_html(X, config, logger=None):
+def write_html(X, config, logger=None):  # pylint: disable=invalid-name
     """Write html.
 
     Parameters
@@ -274,7 +274,7 @@ def write_html(X, config, logger=None):
     return html
 
 
-def get_data_ready_for_d3(df, labels):
+def get_data_ready_for_d3(df, labels):  # pylint: disable=invalid-name
     """Convert the source-target data into d3 compatible data.
 
     Parameters
@@ -297,6 +297,7 @@ def get_data_ready_for_d3(df, labels):
     _, idx = np.unique(list_id, return_index=True)
 
     # Set the nodes
+    # pylint: disable=invalid-name
     X = '{"nodes":['
     for i in idx:
         color = labels.get(list_name[i])['color']
