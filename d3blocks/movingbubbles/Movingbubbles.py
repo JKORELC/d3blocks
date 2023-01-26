@@ -183,7 +183,8 @@ def _set_nodecolor(df, sample_id, color, cmap, logger):  # pylint: disable=inval
     # Node color is set to default.
     if isinstance(color, dict):
         # add new column to df with node color for the specified sample_id
-        if logger is not None: logger.info('Processing the specified in node colors in dictionary..')
+        if logger is not None:
+            logger.info('Processing the specified in node colors in dictionary..')
         df['color'] = '#808080'
         for key in color.keys():
             df.loc[df[sample_id]==key, 'color'] = color.get(key)
@@ -204,7 +205,8 @@ def _set_nodesize(df, sample_id, size, logger):  # pylint: disable=invalid-name
     # Node size is set to default.
     if isinstance(size, dict):
         # add new column to df with node size for the specified sample_id
-        if logger is not None: logger.info('Processing the specified in node sizes in dictionary..')
+        if logger is not None:
+            logger.info('Processing the specified in node sizes in dictionary..')
         df['size'] = 4
         for key in size.keys():
             df.loc[df[sample_id]==key, 'size'] = size.get(key)
