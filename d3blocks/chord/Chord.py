@@ -10,19 +10,17 @@ from ismember import ismember
 import colourmap
 import numpy as np
 from jinja2 import Environment, PackageLoader
-from pathlib import Path
-import os
-import time
 
 try:
     from .. utils import set_colors, pre_processing, convert_dataframe_dict, set_path, update_config, set_labels, create_unique_dataframe, write_html_file
-except:
+except ImportError:
     from utils import set_colors, pre_processing, convert_dataframe_dict, set_path, update_config, set_labels, create_unique_dataframe, write_html_file
 
 
 # %% Set configuration properties
-def set_config(config={}, **kwargs):
-    """Set the default configuration setting."""
+def set_config(config=None, **kwargs):
+    config = config or {}
+    # Set the default configuration setting.
     logger = kwargs.get('logger', None)
     config['chart'] ='Chord'
     config['title'] = kwargs.get('title', 'Chord - D3blocks')
@@ -37,7 +35,7 @@ def set_config(config={}, **kwargs):
     return config
 
 
-def set_node_properties(df, **kwargs):
+def set_node_properties(df, **kwargs):  # pylint: disable=invalid-name
     """Set the node properties.
 
     Parameters
@@ -83,7 +81,7 @@ def set_node_properties(df, **kwargs):
 
 
 # %% Set Edge properties
-def set_edge_properties(df, **kwargs):
+def set_edge_properties(df, **kwargs):  # pylint: disable=invalid-name
     """Set the edge properties.
 
     Parameters
@@ -142,19 +140,22 @@ def set_edge_properties(df, **kwargs):
 
     if isinstance(opacity, (list, np.ndarray)) and (len(opacity)!=df.shape[0]):
         raise Exception('Input parameter "opacity" should be of same size of dataframe.')
-    elif (opacity is None) and np.any(df.columns=='opacity'):
+
+    if (opacity is None) and np.any(df.columns=='opacity'):
         # Set to dataframe.
         if logger is not None: logger.info('Set edge-opacity using the column "opacity" of the input DataFrame.')
         # opacity = df['opacity'].values
-    elif (nodes is not None) and isinstance(opacity, str) and (opacity=='source' or opacity=='target'):
+    elif (nodes is not None) and isinstance(opacity, str) and (opacity in ('source', 'target')):
         # Set to source or target node color.
-        if logger is not None: logger.info('Set edge-opacity based on the [%s] node-opacity.' %(opacity))
+        if logger is not None:
+            logger.info('Set edge-opacity based on the [%s] node-opacity.' %(opacity))  # pylint: disable=consider-using-f-string
         df['opacity'] = 0.8
         for key in nodes.keys():
             df.loc[df[opacity]==key, 'opacity']=nodes.get(key)['opacity']
     elif isinstance(opacity, (int, float)):
         # In case one opacity is defined.
-        if logger is not None: logger.info('Set edge-opacity to [%s].' %(opacity))
+        if logger is not None:
+            logger.info('Set edge-opacity to [%s].' %(opacity))  # pylint: disable=consider-using-f-string
         df['opacity'] = opacity
     elif isinstance(opacity, (list, np.ndarray)) and (len(opacity)==df.shape[0]):
         if logger is not None: logger.info('Set edge-opacity to user defined input.')
@@ -170,15 +171,17 @@ def set_edge_properties(df, **kwargs):
         # Set to dataframe.
         if logger is not None: logger.info('Set edge-colors using the column "color" of the input DataFrame.')
         color = df['color'].values
-    elif (nodes is not None) and (isinstance(color, str)) and (color=='source' or color=='target'):
+    elif (nodes is not None) and (isinstance(color, str)) and (color in ('source', 'target')):
         # Set to source or target node color.
-        if logger is not None: logger.info('Set edge-colors based on the [%s] node-color.' %(color))
+        if logger is not None:
+            logger.info('Set edge-colors based on the [%s] node-color.' %(color))  # pylint: disable=consider-using-f-string
         df['color'] = '#000000'
         for key in nodes.keys():
             df.loc[df[color]==key, 'color'] = nodes.get(key)['color']
     elif isinstance(color, str) and (color[0]=='#') and (len(color)==7):
         # In case one hex color is defined.
-        if logger is not None: logger.info('Set all edge-colors to [%s].' %(color))
+        if logger is not None:
+            logger.info('Set all edge-colors to [%s].' %(color))  # pylint: disable=consider-using-f-string
         df['color'] = np.repeat(color, df.shape[0])
     elif isinstance(color, (list, np.ndarray)) and (len(color)==df.shape[0]):
         if logger is not None: logger.info('Set edge-colors to user defined input.')
@@ -193,7 +196,7 @@ def set_edge_properties(df, **kwargs):
     return df
 
 
-def show(df, **kwargs):
+def show(df, **kwargs):  # pylint: disable=invalid-name
     """Show the Chord chart.
 
     Parameters
@@ -235,12 +238,12 @@ def show(df, **kwargs):
     df['source_id'] = list(map(lambda x: node_properties.get(x)['id'], df['source']))
     df['target_id'] = list(map(lambda x: node_properties.get(x)['id'], df['target']))
     # Create the data from the input of javascript
-    X = get_data_ready_for_d3(df, node_properties)
+    X = get_data_ready_for_d3(df, node_properties)  # pylint: disable=invalid-name
     # Write to HTML
     return write_html(X, config, logger=logger)
 
 
-def write_html(X, config, logger=None):
+def write_html(X, config, logger=None):  # pylint: disable=invalid-name
     """Write html.
 
     Parameters
@@ -265,7 +268,7 @@ def write_html(X, config, logger=None):
 
     try:
         jinja_env = Environment(loader=PackageLoader(package_name=__name__, package_path='d3js'))
-    except:
+    except ValueError:
         jinja_env = Environment(loader=PackageLoader(package_name='d3blocks.chord', package_path='d3js'))
 
     index_template = jinja_env.get_template('chord.html.j2')
@@ -277,7 +280,7 @@ def write_html(X, config, logger=None):
     return html
 
 
-def get_data_ready_for_d3(df, labels):
+def get_data_ready_for_d3(df, labels):  # pylint: disable=invalid-name
     """Convert the source-target data into d3 compatible data.
 
     Parameters
@@ -300,6 +303,7 @@ def get_data_ready_for_d3(df, labels):
     _, idx = np.unique(list_id, return_index=True)
 
     # Set the nodes
+    # pylint: disable=invalid-name
     X = '{"nodes":['
     for i in idx:
         color = labels.get(list_name[i])['color']
