@@ -10,7 +10,6 @@ from ismember import ismember
 import colourmap
 import numpy as np
 import os
-from shutil import copyfile
 from clusteval import clusteval
 
 try:
