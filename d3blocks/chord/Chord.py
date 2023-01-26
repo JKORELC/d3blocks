@@ -140,7 +140,8 @@ def set_edge_properties(df, **kwargs):  # pylint: disable=invalid-name
 
     if isinstance(opacity, (list, np.ndarray)) and (len(opacity)!=df.shape[0]):
         raise Exception('Input parameter "opacity" should be of same size of dataframe.')
-    elif (opacity is None) and np.any(df.columns=='opacity'):
+
+    if (opacity is None) and np.any(df.columns=='opacity'):
         # Set to dataframe.
         if logger is not None: logger.info('Set edge-opacity using the column "opacity" of the input DataFrame.')
         # opacity = df['opacity'].values
