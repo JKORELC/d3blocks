@@ -182,9 +182,9 @@ def write_html(json_data, config, logger=None):
 
     """
     # Check path
-    dirpath, filename = None, ''
+    _, filename = None, ''
     if config['filepath'] is not None:
-        dirpath, filename = os.path.split(config['filepath'])
+        _, filename = os.path.split(config['filepath'])
 
     # Get path to files
     d3_script = os.path.abspath(os.path.join(config['curpath'], 'heatmap/d3js/heatmap.html.j2'))
