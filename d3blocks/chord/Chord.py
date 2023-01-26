@@ -145,7 +145,7 @@ def set_edge_properties(df, **kwargs):  # pylint: disable=invalid-name
         # Set to dataframe.
         if logger is not None: logger.info('Set edge-opacity using the column "opacity" of the input DataFrame.')
         # opacity = df['opacity'].values
-    elif (nodes is not None) and isinstance(opacity, str) and (opacity=='source' or opacity=='target'):
+    elif (nodes is not None) and isinstance(opacity, str) and (opacity in ('source', 'target')):
         # Set to source or target node color.
         if logger is not None: logger.info('Set edge-opacity based on the [%s] node-opacity.' %(opacity))
         df['opacity'] = 0.8
