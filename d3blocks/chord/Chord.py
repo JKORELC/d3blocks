@@ -264,7 +264,7 @@ def write_html(X, config, logger=None):  # pylint: disable=invalid-name
 
     try:
         jinja_env = Environment(loader=PackageLoader(package_name=__name__, package_path='d3js'))
-    except:
+    except ValueError:
         jinja_env = Environment(loader=PackageLoader(package_name='d3blocks.chord', package_path='d3js'))
 
     index_template = jinja_env.get_template('chord.html.j2')
