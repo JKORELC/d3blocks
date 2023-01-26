@@ -128,7 +128,7 @@ class Testd3blocks(unittest.TestCase):
         # Show the chord diagram
         d3.set_edge_properties(df, color='#f0f0f0')
         assert np.all(d3.edge_properties['color']=='#f0f0f0')
-        d3.show(showfig=True, filepath='chord.html')
+        d3.show(showfig=True, filepath='/tmp/chord.html')
 
         d3 = D3Blocks()
         df = d3.import_example('energy')
