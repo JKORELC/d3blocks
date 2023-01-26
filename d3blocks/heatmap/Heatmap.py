@@ -6,11 +6,13 @@ Mail        : erdogant@gmail.com, oliver@sensibly.nl
 Github      : https://github.com/d3blocks/d3blocks
 License     : GPL3
 """
-from ismember import ismember
-import colourmap
-import numpy as np
 import os
+import numpy as np
+
 from clusteval import clusteval
+from ismember import ismember
+
+import colourmap
 
 try:
     from .. utils import set_path, set_labels, write_html_file
@@ -52,7 +54,7 @@ def set_config(config=None, **kwargs):
 
 
 # %% Node properties
-def set_node_properties(df, **kwargs):
+def set_node_properties(df, **kwargs):  # pylint: disable=invalid-name
     """Set the node properties.
 
     Parameters
@@ -91,7 +93,7 @@ def set_node_properties(df, **kwargs):
     return dict_labels
 
 
-def set_properties(df, config, node_properties, logger=None):
+def set_properties(df, config, node_properties, logger=None):  # pylint: disable=invalid-name
     # Rescale data
     if config['vmax'] is not None:
         df = _scale(df, vmax=config['vmax'], make_round=False, logger=logger)
@@ -107,15 +109,15 @@ def set_properties(df, config, node_properties, logger=None):
     return html
 
 
-def color_on_clusterlabel(adjmat, df, node_properties, config, logger):
+def color_on_clusterlabel(adjmat, df, node_properties, config, logger):  # pylint: disable=invalid-name
     # Default is all cluster labels are the same
     node_properties['classlabel'] = np.zeros(node_properties.shape[0]).astype(int)
 
     if config['classlabel']=='cluster':
         # Cluster the nodes
-        ce = clusteval(**config['cluster_params'])
+        ce = clusteval(**config['cluster_params'])  # pylint: disable=invalid-name
         results = ce.fit(adjmat.values)
-        Iloc, idx = ismember(node_properties['label'].values, adjmat.index.values)
+        Iloc, idx = ismember(node_properties['label'].values, adjmat.index.values)  # pylint: disable=invalid-name
         if np.any(~Iloc):
             logger.error('Feature name(s): %s can not be used. Hint: Remove special characters. <return>' %(df.index.values[~np.isin(np.arange(0, df.shape[0]), idx)]))
             return None
@@ -131,7 +133,7 @@ def color_on_clusterlabel(adjmat, df, node_properties, config, logger):
     return node_properties
 
 # %% Scaling
-def _scale(X, vmax=100, make_round=True, logger=None):
+def _scale(X, vmax=100, make_round=True, logger=None):  # pylint: disable=invalid-name
     """Scale data.
 
     Description
@@ -205,7 +207,7 @@ def write_html(json_data, config, logger=None):
     return html
 
 
-def get_data_ready_for_d3(df, node_properties):
+def get_data_ready_for_d3(df, node_properties):  # pylint: disable=invalid-name
     """Convert the source-target data into d3 compatible data.
 
     Description
