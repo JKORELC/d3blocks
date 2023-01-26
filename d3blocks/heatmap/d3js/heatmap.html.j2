@@ -264,32 +264,9 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-//Read the data from url
-//d3.json("https://bost.ocks.org/mike/miserables/miserables.json", function(data) {
-//d3.json("$DATA_PATH$", function(data) {
-
-
 //Store data in variable
 var data = 
 	$DATA_COMES_HERE$
-
-//Store data in variable
-//var data = 
-//    {
-//      "nodes":
-//          [
-//              {"name":"Name A","cluster":1},
-//              {"name":"Name B","cluster":2},
-//              {"name":"Name C","cluster":2},
-//              {"name":"Name D","cluster":3},
-//              ],
-//          "links":
-//          [
-//              {"source":0,"target":1,"value":1},
-//              {"source":2,"target":2,"value":1},
-//              {"source":3,"target":1,"value":1},
-//          ]
-//      }
 
   var matrix = [],
       nodes = data.nodes,
@@ -409,8 +386,6 @@ var data =
     order("cluster");
     d3.select("#order").property("selectedIndex", 2).node().focus();
   }, 5000);
-
-//});
 
 </script>
 
