@@ -18,7 +18,8 @@ except:
 
 
 # %% Set configuration properties
-def set_config(config={}, **kwargs):
+def set_config(config=None, **kwargs):
+    config = config or {}
     """Set the default configuration setting."""
     logger = kwargs.get('logger', None)
     config['chart'] ='Chord'
