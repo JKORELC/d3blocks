@@ -60,7 +60,7 @@ class Testd3blocks(unittest.TestCase):
         assert html is not None
         html = d3.sankey(df, filepath=None, notebook=True)
         assert html is None
-        html = d3.sankey(df, filepath='./test.html', notebook=False)
+        html = d3.sankey(df, filepath='/tmp/test.html', notebook=False)
         assert html is None
 
 
@@ -136,7 +136,7 @@ class Testd3blocks(unittest.TestCase):
         assert html is not None
         html = d3.chord(df, filepath=None, notebook=True)
         assert html is None
-        html = d3.chord(df, filepath='test.html', notebook=False)
+        html = d3.chord(df, filepath='/tmp/test.html', notebook=False)
         assert html is None
 
     def test_timeseries(self):
@@ -154,7 +154,7 @@ class Testd3blocks(unittest.TestCase):
         assert html is not None
         html = d3.timeseries(df, datetime='date', dt_format='%Y-%m-%d %H:%M:%S', filepath=None, notebook=True)
         assert html is None
-        html = d3.timeseries(df, datetime='date', dt_format='%Y-%m-%d %H:%M:%S', filepath='./test.html', notebook=False)
+        html = d3.timeseries(df, datetime='date', dt_format='%Y-%m-%d %H:%M:%S', filepath='/tmp/test.html', notebook=False)
         assert html is None
         
 
@@ -222,7 +222,7 @@ class Testd3blocks(unittest.TestCase):
         assert html is not None
         html = d3.scatter(df['x'].values, df['y'].values, filepath=None, notebook=True)
         assert html is None
-        html = d3.scatter(df['x'].values, df['y'].values, filepath='./test.html', notebook=False)
+        html = d3.scatter(df['x'].values, df['y'].values, filepath='/tmp/test.html', notebook=False)
         assert html is None
 
 
@@ -250,7 +250,7 @@ class Testd3blocks(unittest.TestCase):
         assert html is not None
         html = d3.violin(x=df['labels'].values, y=df['age'].values, filepath=None, notebook=True)
         assert html is None
-        html = d3.violin(x=df['labels'].values, y=df['age'].values, filepath='./test.html', notebook=False)
+        html = d3.violin(x=df['labels'].values, y=df['age'].values, filepath='/tmp/test.html', notebook=False)
         assert html is None
 
     def test_particles(self):
@@ -297,7 +297,7 @@ class Testd3blocks(unittest.TestCase):
         assert html is not None
         html = d3.violin(x=df['labels'].values, y=df['age'].values, filepath=None, notebook=True)
         assert html is None
-        html = d3.violin(x=df['labels'].values, y=df['age'].values, filepath='./test.html', notebook=False, showfig=False)
+        html = d3.violin(x=df['labels'].values, y=df['age'].values, filepath='/tmp/test.html', notebook=False, showfig=False)
         assert html is None
         
         
@@ -309,7 +309,7 @@ class Testd3blocks(unittest.TestCase):
         assert html is not None
         html = d3.timeseries(df, datetime='date', dt_format='%Y-%m-%d %H:%M:%S', filepath=None, notebook=True)
         assert html is None
-        html = d3.timeseries(df, datetime='date', dt_format='%Y-%m-%d %H:%M:%S', filepath='./test.html', notebook=False, showfig=False)
+        html = d3.timeseries(df, datetime='date', dt_format='%Y-%m-%d %H:%M:%S', filepath='/tmp/test.html', notebook=False, showfig=False)
         assert html is None
         
         # Scatter
@@ -320,7 +320,7 @@ class Testd3blocks(unittest.TestCase):
         assert html is not None
         html = d3.scatter(df['x'].values, df['y'].values, filepath=None, notebook=True)
         assert html is None
-        html = d3.scatter(df['x'].values, df['y'].values, filepath='./test.html', notebook=False, showfig=False)
+        html = d3.scatter(df['x'].values, df['y'].values, filepath='/tmp/test.html', notebook=False, showfig=False)
         assert html is None
         
         # Sankey
@@ -331,7 +331,7 @@ class Testd3blocks(unittest.TestCase):
         assert html is not None
         html = d3.sankey(df, filepath=None, notebook=True)
         assert html is None
-        html = d3.sankey(df, filepath='./test.html', notebook=False, showfig=False)
+        html = d3.sankey(df, filepath='/tmp/test.html', notebook=False, showfig=False)
         assert html is None
         
         
