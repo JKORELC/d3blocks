@@ -15,7 +15,7 @@ from clusteval import clusteval
 
 try:
     from .. utils import set_path, set_labels, write_html_file
-except:
+except ImportError:
     from utils import set_path, set_labels, write_html_file
 
 
