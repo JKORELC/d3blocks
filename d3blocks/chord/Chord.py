@@ -10,9 +10,6 @@ from ismember import ismember
 import colourmap
 import numpy as np
 from jinja2 import Environment, PackageLoader
-from pathlib import Path
-import os
-import time
 
 try:
     from .. utils import set_colors, pre_processing, convert_dataframe_dict, set_path, update_config, set_labels, create_unique_dataframe, write_html_file
