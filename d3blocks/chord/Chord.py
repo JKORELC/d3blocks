@@ -20,7 +20,7 @@ except ImportError:
 # %% Set configuration properties
 def set_config(config=None, **kwargs):
     config = config or {}
-    """Set the default configuration setting."""
+    # Set the default configuration setting.
     logger = kwargs.get('logger', None)
     config['chart'] ='Chord'
     config['title'] = kwargs.get('title', 'Chord - D3blocks')
