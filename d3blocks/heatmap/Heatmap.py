@@ -20,8 +20,9 @@ except ImportError:
 
 
 # %% Set configuration properties
-def set_config(config={}, **kwargs):
+def set_config(config=None, **kwargs):
     """Set the default configuration setting."""
+    config = config or None
     logger = kwargs.get('logger', None)
     config['chart'] ='Heatmap'
     config['title'] = kwargs.get('title', 'Heatmap - D3blocks')
