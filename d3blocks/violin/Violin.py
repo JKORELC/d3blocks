@@ -11,9 +11,6 @@ import colourmap
 import numpy as np
 import pandas as pd
 from jinja2 import Environment, PackageLoader
-from pathlib import Path
-import os
-import time
 try:
     from .. utils import convert_dataframe_dict, set_path, update_config, write_html_file
 except:
