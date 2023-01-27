@@ -141,6 +141,7 @@ def set_edge_properties(*args, **kwargs):
     # if (x2 is None): x2 = x
     # if (y2 is None): y2 = y
 
+    # pylint: disable=superfluous-parens
     if (x1 is None): x1 = np.zeros_like(x) * np.nan
     if (y1 is None): y1 = np.zeros_like(x) * np.nan
     if (x2 is None): x2 = np.zeros_like(x) * np.nan
@@ -250,8 +251,11 @@ def show(df, **kwargs):
     config['radio_button_visible'] = [("display:none;" if (np.all(list(map(np.isnan, df['x1'])))) else ""),
                                       ("display:none;" if (np.all(list(map(np.isnan, df['x1'])))) else ""),
                                       ("display:none;" if (np.all(list(map(np.isnan, df['x2'])))) else "")]
-    if ("display:none" in config['radio_button_visible'][0]): config['label_radio'][0]=""
-    if ("display:none" in config['radio_button_visible'][1]): config['label_radio'][1]=""
+    # pylint: disable=superfluous-parens
+    if ("display:none" in config['radio_button_visible'][0]):
+        config['label_radio'][0]=""
+    if ("display:none" in config['radio_button_visible'][1]):
+        config['label_radio'][1]=""
     if len(config['label_radio'])==3 and ("display:none" in config['radio_button_visible'][2]):
         config['label_radio'][2]=""
     elif len(config['label_radio'])==2:
