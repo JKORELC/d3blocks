@@ -8,6 +8,7 @@ License     : GPL3
 """
 
 # import colourmap
+# pylint: disable=invalid-name
 
 import numpy as np
 from jinja2 import Environment, PackageLoader
