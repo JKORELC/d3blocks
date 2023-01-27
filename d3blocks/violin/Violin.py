@@ -126,21 +126,24 @@ def set_edge_properties(*args, **kwargs):
     # Remove NaN values
     Irem = df['y'].isna()  # pylint: disable=invalid-name
     if np.any(Irem):
-        if logger is not None: logger.info('Removing [%.0d] NaN values.' %(sum(Irem)))
+        if logger is not None:
+            logger.info('Removing [%.0d] NaN values.' %(sum(Irem)))  # pylint: disable=consider-using-f-string
         df = df.loc[~Irem, :]  # pylint: disable=invalid-name
 
     # Filter on class labels
     if x_order is not None:
         classes = "|".join(x_order)
         df = df.loc[df['x'].str.contains(classes), :]  # pylint: disable=invalid-name
-        if logger is not None: logger.info('Filter on: [%s]' %(classes))
+        if logger is not None:
+            logger.info('Filter on: [%s]' %(classes))  # pylint: disable=consider-using-f-string
 
     # Color on values and cmap (after cleaning and filtering)
     if color is None:
         df['color'] = colourmap.fromlist(df['y'].values, scheme='hex', cmap=cmap)[0]
 
     df.reset_index(inplace=True, drop=True)
-    if logger is not None: logger.info('Number of samples: %d' %(df.shape[0]))
+    if logger is not None:
+        logger.info('Number of samples: %d' %(df.shape[0]))  # pylint: disable=consider-using-f-string
     return df
 
 
