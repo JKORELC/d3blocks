@@ -13,14 +13,15 @@ import pandas as pd
 from jinja2 import Environment, PackageLoader
 try:
     from .. utils import convert_dataframe_dict, set_path, update_config, write_html_file
-except:
+except ImportError:
     from utils import convert_dataframe_dict, set_path, update_config, write_html_file
 
 
 # %% Set configuration properties
-def set_config(config={}, **kwargs):
+def set_config(config=None, **kwargs):
     """Set the default configuration settings."""
     logger = kwargs.get('logger', None)
+    config = config or {}
     config['chart'] ='violin'
     config['title'] = kwargs.get('title', 'Violin - D3blocks')
     config['filepath'] = set_path(kwargs.get('filepath', 'violin.html'), logger)
@@ -55,7 +56,7 @@ def set_labels(labels, logger=None):
     return uilabels
 
 
-def set_node_properties(*args, **kwargs):
+def set_node_properties(*args, **kwargs):  # pylint: disable=unused-argument
     """Set the node properties."""
     return None
 
@@ -96,10 +97,10 @@ def set_edge_properties(*args, **kwargs):
     """
     # Collect arguments
     if len(args)==2:
-        x, y = args
+        x, y = args  # pylint: disable=invalid-name
     else:
-        x = kwargs.get('x', None)
-        y = kwargs.get('y', None)
+        x = kwargs.get('x', None)  # pylint: disable=invalid-name
+        y = kwargs.get('y', None)  # pylint: disable=invalid-name
     # Collect key-word arguments
     color = kwargs.get('color', None)
     size = kwargs.get('size', 5)
@@ -120,18 +121,18 @@ def set_edge_properties(*args, **kwargs):
     if isinstance(opacity, (list, np.ndarray)) and (len(opacity)!=len(x)): raise Exception(logger.error('input parameter "opacity" should be of same size of (x, y).'))
 
     # Convert to dataframe
-    df = pd.DataFrame({'x': x, 'y': y, 'color': color, 'size': size, 'stroke': stroke, 'opacity': opacity, 'tooltip': tooltip})
+    df = pd.DataFrame({'x': x, 'y': y, 'color': color, 'size': size, 'stroke': stroke, 'opacity': opacity, 'tooltip': tooltip})  # pylint: disable=invalid-name
 
     # Remove NaN values
-    Irem = df['y'].isna()
+    Irem = df['y'].isna()  # pylint: disable=invalid-name
     if np.any(Irem):
         if logger is not None: logger.info('Removing [%.0d] NaN values.' %(sum(Irem)))
-        df = df.loc[~Irem, :]
+        df = df.loc[~Irem, :]  # pylint: disable=invalid-name
 
     # Filter on class labels
     if x_order is not None:
         classes = "|".join(x_order)
-        df = df.loc[df['x'].str.contains(classes), :]
+        df = df.loc[df['x'].str.contains(classes), :]  # pylint: disable=invalid-name
         if logger is not None: logger.info('Filter on: [%s]' %(classes))
 
     # Color on values and cmap (after cleaning and filtering)
@@ -143,7 +144,7 @@ def set_edge_properties(*args, **kwargs):
     return df
 
 
-def show(df, **kwargs):
+def show(df, **kwargs):  # pylint: disable=invalid-name
     """Show the Violin chart.
 
     Parameters
@@ -207,12 +208,12 @@ def show(df, **kwargs):
         config['mouseleave'] = '.on("mouseleave", mouseleave)'
 
     # Create the data from the input of javascript
-    X = get_data_ready_for_d3(df)
+    X = get_data_ready_for_d3(df)  # pylint: disable=invalid-name
     # Write to HTML
     return write_html(X, config, logger)
 
 
-def write_html(X, config, logger=None):
+def write_html(X, config, logger=None):  # pylint: disable=invalid-name
     """Write html.
 
     Parameters
@@ -257,7 +258,7 @@ def write_html(X, config, logger=None):
     return html
 
 
-def get_data_ready_for_d3(df):
+def get_data_ready_for_d3(df):  # pylint: disable=invalid-name
     """Convert the source-target data into d3 compatible data.
 
     Parameters
@@ -273,6 +274,6 @@ def get_data_ready_for_d3(df):
     """
     df['y']=df['y'].astype(str)
     # Set x, y
-    X = df[['x', 'y', 'color', 'size', 'stroke', 'opacity', 'tooltip']].to_json(orient='records')
+    X = df[['x', 'y', 'color', 'size', 'stroke', 'opacity', 'tooltip']].to_json(orient='records')  # pylint: disable=invalid-name
     # Return
     return X
