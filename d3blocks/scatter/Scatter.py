@@ -59,7 +59,7 @@ def check_exceptions(x, y, x1, y1, x2, y2, size, color, tooltip, logger):
 
 
 # %% Set the Node properties
-def set_node_properties(*args, **kwargs):
+def set_node_properties(*args, **kwargs):  # pylint: disable=unused-argument
     """Set the node properties."""
     return None
 
