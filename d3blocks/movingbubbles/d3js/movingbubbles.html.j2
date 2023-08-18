@@ -65,7 +65,6 @@ var width = {{ WIDTH }},
     height = {{ HEIGHT }},
 	padding = 1,
 	maxRadius = 3;
-	// color = d3.scale.category10();
 	
 var sched_objs = [],
 	curr_minute = 0;
@@ -139,8 +138,6 @@ var nodes = sched_objs.map(function(o, i) {
 		x: init_x,
 		y: init_y,
 		radius: node_size[i], //use the i-th value from the node_size array to set the radius of the i-th node
-		//color: color(act),
-		//color: node_color[i],
         color: (color_method === "STATE" ? color(act) : node_color[i]),
 		moves: 0,
 		next_move_time: o[0].duration,
@@ -151,7 +148,6 @@ var nodes = sched_objs.map(function(o, i) {
 var force = d3.layout.force()
 	.nodes(nodes)
 	.size([width, height])
-	// .links([])
 	.gravity(0)
 	.charge(0)
 	.friction(.9)
@@ -163,7 +159,6 @@ var circle = svg.selectAll("circle")
   .enter().append("circle")
 	.attr("r", function(d) { return d.radius; })
 	.style("fill", function(d) { return d.color; });
-	// .call(force.drag);
 
 // Activity labels
 var label = svg.selectAll("text")
@@ -189,7 +184,6 @@ var label = svg.selectAll("text")
 	
 label.append("tspan")
 	.attr("x", function() { return d3.select(this.parentNode).attr("x"); })
-	// .attr("dy", "1.3em")
 	.attr("text-anchor", "middle")
 	.text(function(d) {
 		return d.short;
@@ -250,7 +244,6 @@ function timer() {
 	d3.select("#current_time").text(minutesToTime(true_minute));
 	
 	// Update notes
-	// var true_minute = curr_minute % 1440;
 	if (true_minute == time_notes[notes_index].start_minute) {
 		d3.select("#note")
 			.style("top", "0px")
@@ -292,20 +285,12 @@ function tick(e) {
 	
 	// Make sleep more sluggish moving.
 	var damper = {{ DAMPER }};
-	
-	//if (curr_act == "0") {
-	//	var damper = 0.6;
-	//} else {
-	//	var damper = 1;
-	//}
 
 	if (color_method === "STATE") {
 		o.color = color(curr_act);
 	} else {
 		o.color = node_color[i];
 	}
-	// console.log(color_method)
-    // console.log(o.color)
 
 	o.y += (foci[curr_act].y - o.y) * k * damper;
 	o.x += (foci[curr_act].x - o.x) * k * damper;
@@ -374,7 +359,6 @@ d3.selectAll(".togglebutton")
 
 
 function color(activity) {
-	//var colorByActivity = {{ COLORBYACTIVITY }}
 	return colorByActivity[activity];
 }
 
@@ -415,31 +399,6 @@ function minutesToTime(m) {
 	
 	return hh + ":" + mm
 }
-
-//function minutesToTime(m) {
-//	var minutes = (m + {{ START_HOUR_MIN }}*60) % 1440;
-//	var hh = Math.floor(minutes / 60);
-//	var ampm;
-//	if (hh > 12) {
-//		hh = hh - 12;
-//		ampm = "pm";
-//	} else if (hh == 12) {
-//		ampm = "pm";
-//	} else if (hh == 0) {
-//		hh = 12;
-//		ampm = "am";
-//	} else {
-//		ampm = "am";
-//	}
-//	var mm = minutes % 60;
-//	if (mm < 10) {
-//		mm = "0" + mm;
-//	}
-//	
-//	return hh + ":" + mm + ampm
-//}
-
-			
 
 
 </script>

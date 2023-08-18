@@ -7,27 +7,30 @@ Github      : https://github.com/d3blocks/d3blocks
 License     : GPL3
 
 """
-import colourmap
-import numpy as np
-import pandas as pd
 import datetime as dt
 import re
-from tqdm import tqdm
-from jinja2 import Environment, PackageLoader
-from pathlib import Path
-import os
 import json
 import random
 import time
+
+import numpy as np
+import pandas as pd
+
+from tqdm import tqdm
+from jinja2 import Environment, PackageLoader
+
+import colourmap
+
 try:
-    from .. utils import convert_dataframe_dict, set_path, pre_processing, update_config, write_html_file
-except:
-    from utils import convert_dataframe_dict, set_path, pre_processing, update_config, write_html_file
+    from .. utils import convert_dataframe_dict, set_path, update_config, write_html_file
+except ImportError:
+    from utils import convert_dataframe_dict, set_path, update_config, write_html_file
 
 
 # %% Set configuration properties
-def set_config(config={}, **kwargs):
-    """Set the default configuration settings."""
+def set_config(config=None, **kwargs):
+    config = config or {}
+    # Set the default configuration settings.
     logger = kwargs.get('logger', None)
     config['chart'] ='movingbubbles'
     config['title'] = kwargs.get('title', 'Movingbubbles - D3blocks')
@@ -70,9 +73,6 @@ def set_labels(labels, logger=None):
     indexes = np.unique(labels, return_index=True)[1]
     uilabels = [labels[index] for index in sorted(indexes)]
 
-    # Preprocessing
-    # uilabels = pre_processing(uilabels)
-
     # Return
     return uilabels
 
@@ -106,7 +106,8 @@ def set_node_properties(labels, **kwargs):
     # Center should be at the very end of the list for d3!
     if center is not None:
         center_label = uilabels.pop(uilabels.index(center))
-        if logger is not None: logger.info('Set the center state at: [%s]' %(center))
+        if logger is not None:
+            logger.info('Set the center state at: [%s]' %(center))  # pylint: disable=consider-using-f-string
         uilabels.append(center_label)
 
     # Create unique label/node colors
@@ -122,7 +123,7 @@ def set_node_properties(labels, **kwargs):
 
 
 # %% Set Edge properties
-def set_edge_properties(df, **kwargs):
+def set_edge_properties(df, **kwargs):  # pylint: disable=invalid-name
     """Set the edge properties for the Movingbubbles block.
 
     Parameters
@@ -165,23 +166,25 @@ def set_edge_properties(df, **kwargs):
 
     # Compute delta
     if ~np.any(df.columns=='delta') and isinstance(df, pd.DataFrame) and np.any(df.columns==state) and np.any(df.columns==datetime) and np.any(df.columns==sample_id):
-        if logger is not None: logger.info('Standardizing input dataframe using method: [%s].' %(method))
-        # df = self.compute_time_delta(df, sample_id=sample_id, datetime=datetime, dt_format=self.config['dt_format'])
+        if logger is not None:
+            logger.info('Standardizing input dataframe using method: [%s].' %(method))  # pylint: disable=consider-using-f-string
         df = standardize(df, method=method, sample_id=sample_id, datetime=datetime, dt_format=dt_format, minimum_time=timedelta, logger=logger)
     else:
-        raise Exception(print('Can not find the specified columns: "state", "datetime", or "sample_id" columns in the input dataframe: %s' %(df.columns.values)))
+        message = f"Cannot find the specified columns in the dataframe: 'state', 'datetime', or 'sample_id': {df.columns.tolist()}"
+        raise Exception(message)
 
     # Set size per node. Note that sizes are still constant per node!
     df = _set_nodesize(df, sample_id, size, logger)
-    # Colol per node
+    # Color per node
     df = _set_nodecolor(df, sample_id, color, cmap, logger)
     return df
 
-def _set_nodecolor(df, sample_id, color, cmap, logger):
+def _set_nodecolor(df, sample_id, color, cmap, logger):  # pylint: disable=invalid-name
     # Node color is set to default.
     if isinstance(color, dict):
         # add new column to df with node color for the specified sample_id
-        if logger is not None: logger.info('Processing the specified in node colors in dictionary..')
+        if logger is not None:
+            logger.info('Processing the specified in node colors in dictionary..')
         df['color'] = '#808080'
         for key in color.keys():
             df.loc[df[sample_id]==key, 'color'] = color.get(key)
@@ -192,16 +195,18 @@ def _set_nodecolor(df, sample_id, color, cmap, logger):
     # If the color column not exists, create one with default color
     if not np.any(np.isin(df.columns, 'color')):
         df['color'] = color
-        if logger is not None: logger.info('Set all nodes to color: %s' %(color))
+        if logger is not None:
+            logger.info('Set all nodes to color: %s' %(color))  # pylint: disable=consider-using-f-string
 
     return df
 
 
-def _set_nodesize(df, sample_id, size, logger):
+def _set_nodesize(df, sample_id, size, logger):  # pylint: disable=invalid-name
     # Node size is set to default.
     if isinstance(size, dict):
         # add new column to df with node size for the specified sample_id
-        if logger is not None: logger.info('Processing the specified in node sizes in dictionary..')
+        if logger is not None:
+            logger.info('Processing the specified in node sizes in dictionary..')
         df['size'] = 4
         for key in size.keys():
             df.loc[df[sample_id]==key, 'size'] = size.get(key)
@@ -209,12 +214,13 @@ def _set_nodesize(df, sample_id, size, logger):
     # If the size column not exists, create one with default size
     if not np.any(np.isin(df.columns, 'size')):
         df['size'] = size
-        if logger is not None: logger.info('Set all nodes to size: %d' %(size))
+        if logger is not None:
+            logger.info('Set all nodes to size: %d' %(size))  # pylint: disable=consider-using-f-string
 
     return df
 
 
-def show(df, **kwargs):
+def show(df, **kwargs):  # pylint: disable=invalid-name
     """Build and show the graph.
 
     df : pd.DataFrame()
@@ -237,12 +243,10 @@ def show(df, **kwargs):
 
     # Convert dict/frame.
     labels = convert_dataframe_dict(labels, frame=False)
-    # df = convert_dataframe_dict(df, frame=True)
 
     if not np.any(df.columns=='delta'):
         raise Exception('Column "delta" is missing in dataFrame of type datetime.')
     if config['center'] is None:
-        # config['center'] = [*labels.keys()][0]
         config['center'] = ""
 
     # Extract minutes and days
@@ -254,12 +258,12 @@ def show(df, **kwargs):
         df['time_in_state'] = df['delta'].dt.days.astype(int)
 
     # Transform dataframe into input form for d3
-    X = []
+    X = []  # pylint: disable=invalid-name
     sid = np.array(list(map(lambda x: labels.get(x)['id'], df[config['columns']['state']].values)))
     uiid = np.unique(df['sample_id'])
     for i in uiid:
         # Combine the sample_id with its time in state
-        Iloc=df['sample_id']==i
+        Iloc=df['sample_id']==i  # pylint: disable=invalid-name
         tmplist=str(list(zip(sid[Iloc], df['time_in_state'].loc[Iloc].values)))
         tmplist=tmplist.replace('(', '')
         tmplist=tmplist.replace(')', '')
@@ -267,7 +271,7 @@ def show(df, **kwargs):
         tmplist=tmplist.replace(']', '')
         tmplist=tmplist.replace(' ', '')
         # Make one big happy list
-        X = [tmplist] + X
+        X = [tmplist] + X  # pylint: disable=invalid-name
 
     # Node size in the same order as the uiid
     nodedict = dict(zip(df['sample_id'], df['size']))
@@ -280,8 +284,6 @@ def show(df, **kwargs):
     # Set color codes for the d3js
     df_labels = pd.DataFrame(labels).T
     config['colorByActivity'] = dict(df_labels[['id', 'color']].values.astype(str))
-    # config['node_size'] = dict(zip(df_labels['id'].astype(str), df_labels['size']))
-    # config['node_size'] = dict(zip(df['sample_id'], [4]*df.shape[0]))
 
     # Create the description for the numerical codes
     act_codes = []
@@ -314,7 +316,7 @@ def show(df, **kwargs):
     return write_html(X, config, logger)
 
 
-def write_html(X, config, logger=None):
+def write_html(X, config, logger=None):  # pylint: disable=invalid-name
     """Write html.
 
     Parameters
@@ -337,7 +339,7 @@ def write_html(X, config, logger=None):
 
     # Set the selectionbox correctly on the form
     config['color_method'] = config['color_method'].upper()
-    SELECTED_STATE = {'STATE': '', 'NODE': ''}
+    SELECTED_STATE = {'STATE': '', 'NODE': ''}  # pylint: disable=invalid-name
     SELECTED_STATE[config['color_method']] = 'selected="selected"'
 
     content = {
@@ -367,7 +369,7 @@ def write_html(X, config, logger=None):
 
     try:
         jinja_env = Environment(loader=PackageLoader(package_name=__name__, package_path='d3js'))
-    except:
+    except ValueError:
         jinja_env = Environment(loader=PackageLoader(package_name='d3blocks.movingbubbles', package_path='d3js'))
 
     index_template = jinja_env.get_template('movingbubbles.html.j2')
@@ -379,7 +381,7 @@ def write_html(X, config, logger=None):
     return html
 
 
-def standardize(df, method=None, sample_id='sample_id', datetime='datetime', dt_format='%d-%m-%Y %H:%M:%S', minimum_time='minutes', logger=None):
+def standardize(df, method=None, sample_id='sample_id', datetime='datetime', dt_format='%d-%m-%Y %H:%M:%S', minimum_time='minutes', logger=None):  # pylint: disable=invalid-name
     """Standardize time per sample_id.
 
     Parameters
@@ -411,43 +413,33 @@ def standardize(df, method=None, sample_id='sample_id', datetime='datetime', dt_
 
     # Check datetime format
     if not isinstance(df[datetime][0], dt.date):
-        if logger is not None: logger.info('Set datetime format to [%s]' %(dt_format))
+        if logger is not None:
+            logger.info('Set datetime format to [%s]' %(dt_format))  # pylint: disable=consider-using-f-string
         df[datetime] = pd.to_datetime(df[datetime], format=dt_format)
 
     # Initialize empty delta
     df['delta'] = df[datetime] - df[datetime]
-    # Initialize empty datetime_norm
-    # df['datetime_norm'] = df[datetime] - df[datetime]
-    # Set a default start point.
-    # timenow = dt.datetime.strptime(dt.datetime.now().strftime(dt_format), dt_format)
-    # timenow = timenow.replace(year=1980, month=1, day=1, hour=0, minute=0, second=0)
 
     if method=='samplewise':
-        if logger is not None: logger.info('Standardize method: [%s]' %(method))
+        if logger is not None:
+            logger.info('Standardize method: [%s]' %(method))  # pylint: disable=consider-using-f-string
         df = df.sort_values(by=[sample_id, datetime])
         df.reset_index(drop=True, inplace=True)
         # Standardize per unique sample id.
-        for s in tqdm(uis):
-            # Get data for specific sample-id
-            Iloc = df[sample_id]==s
+        for s in tqdm(uis):  # pylint: disable=invalid-name
+            # Get data for specific sample-idOB
+            Iloc = df[sample_id]==s  # pylint: disable=invalid-name
             dfs = df.loc[Iloc, :]
             # Timedelta
             timedelta = dfs[datetime].iloc[1:].values - dfs[datetime].iloc[:-1]
             df.loc[Iloc, 'delta'] = timedelta
-            # Standardize time per unique sample. Each sample will start at timenow.
-            # df.loc[Iloc, 'datetime_norm'] = timenow + (dfs[datetime].loc[Iloc] - dfs[datetime].loc[Iloc].min())
     elif method=='relative':
         df = df.sort_values(by=[datetime])
         df.reset_index(drop=True, inplace=True)
 
         # Note: The first state per sample_id is depended on the prevous state.
-        # timedelta = df[datetime]-df[datetime]
         tmpdelta = df[datetime].iloc[1:].values - df[datetime].iloc[:-1]
-        # timedelta.loc[1:] = tmpdelta.values
         df['delta'] = tmpdelta
-        # tmpdelta = df[datetime].iloc[1:].values - df[datetime].iloc[:-1]
-        # timedelta.loc[1:] = tmpdelta.values
-        # df['delta'] = timedelta
 
         # Note: Last state per sample_id should always be ending and thus 0
         uisample_id = df['sample_id'].unique()
@@ -455,25 +447,22 @@ def standardize(df, method=None, sample_id='sample_id', datetime='datetime', dt_
         for sid in uisample_id:
             getidx.append(df[[sample_id, datetime]].loc[df[sample_id]==sid].sort_values(by=[datetime]).index[-1])
         df.loc[getidx, 'delta']=np.nan
-        # df['datetime_norm'] = timenow + (df[datetime] - df[datetime].min())
     elif method=='minimum':
         df['delta'] = df['datetime'] - df['datetime'].min()
 
 
     # if NaT is found, set it to 0
-    Iloc = df['delta'].isna()
+    Iloc = df['delta'].isna()  # pylint: disable=invalid-name
     if np.any(Iloc):
         df.loc[Iloc, 'delta'] = df[datetime].iloc[0] - df[datetime].iloc[0]
 
-    # Set datetime
-    # df['datetime_norm'] = pd.to_datetime(df['datetime_norm'], format=dt_format, errors='ignore')
     # Sort on datetime
     df = df.sort_values(by=[datetime])
     df.reset_index(drop=True, inplace=True)
 
     # Zero time causes a total halt of movements. Prevent by adding a minimum time.
     zerotime=df['delta'][0] - df['delta'][0]
-    Iloc = df['delta']==zerotime
+    Iloc = df['delta']==zerotime  # pylint: disable=invalid-name
     if np.any(Iloc):
         if minimum_time=='minutes':
             df.loc[Iloc, 'delta'] = df.loc[Iloc, 'delta'] + dt.timedelta(seconds=60)
@@ -485,7 +474,7 @@ def standardize(df, method=None, sample_id='sample_id', datetime='datetime', dt_
     # Return
     return df
 
-def generate_data_with_random_datetime(n=10000, c=1000, date_start=None, date_stop=None, dt_format='%d-%m-%Y %H:%M:%S', logger=None):
+def generate_data_with_random_datetime(n=10000, c=1000, date_start=None, date_stop=None, dt_format='%d-%m-%Y %H:%M:%S', logger=None):  # pylint: disable=invalid-name
     """Generate random time data.
 
     Parameters
@@ -507,16 +496,14 @@ def generate_data_with_random_datetime(n=10000, c=1000, date_start=None, date_st
     """
     if date_start is None:
         date_start="17-12-1903 00:00:00"
-        logger.info('Date start is set to %s' %(date_start))
+        logger.info('Date start is set to %s' %(date_start))  # pylint: disable=consider-using-f-string
     if date_stop is None:
         date_stop="17-12-1913 23:59:59"
-        logger.info('Date start is set to %s' %(date_stop))
+        logger.info('Date start is set to %s' %(date_stop))  # pylint: disable=consider-using-f-string
 
     # Create empty dataframe
-    df = pd.DataFrame(columns=['datetime', 'sample_id', 'state'], data=np.array([[None, None, None]] * n))
+    df = pd.DataFrame(columns=['datetime', 'sample_id', 'state'], data=np.array([[None, None, None]] * n))  # pylint: disable=invalid-name
     location_types = ['Home', 'Hospital', 'Bed', 'Sport', 'Sleeping', 'Sick', 'Work', 'Eating', 'Bored']
-    # Take random few columns
-    # location_types = location_types[0:random.randint(2, len(location_types))]
     # Always add the column Travel
     location_types = location_types + ['Travel']
     # Set the probability of selecting a certain state
@@ -527,7 +514,6 @@ def generate_data_with_random_datetime(n=10000, c=1000, date_start=None, date_st
     idx_middle=np.where(np.array(location_types)=='Travel')[0][0]
     i=0
     while i <= df.shape[0]-3:
-    # for i in tqdm(range(0, df.shape[0])):
         # A specific sample always contains 3 states. The start-state, the travel-state and the end-state.
 
         # Get the particular sample-id
@@ -554,7 +540,7 @@ def generate_data_with_random_datetime(n=10000, c=1000, date_start=None, date_st
         # Get random idx based pdf
         df['sample_id'].iloc[i] = sample_id
         idx = np.random.choice(np.arange(0, len(location_types)), p=pdf)
-        if (location_types[idx]==df['state'].iloc[i-1]):
+        if (location_types[idx]==df['state'].iloc[i-1]):  # pylint: disable=superfluous-parens
             idx = np.mod(idx+1, len(location_types))
 
         df['state'].iloc[i] = location_types[idx]
@@ -569,11 +555,11 @@ def generate_data_with_random_datetime(n=10000, c=1000, date_start=None, date_st
 
         
     # Set a random time-point at multiple occasion at the same time.
-    # df['datetime'].iloc[np.array(list(map(lambda x: random.randint(0, c), np.arange(0, c/20))))] = df['datetime'].iloc[0]
     df['datetime'] = pd.to_datetime(df['datetime'])
-    df = df.sort_values(by="datetime")
+    df = df.sort_values(by="datetime")  # pylint: disable=invalid-name
     df.dropna(inplace=True)
     df.reset_index(inplace=True, drop=True)
+
     return df
 
 
@@ -593,16 +579,16 @@ def str_time_prop(start, end, prop, dt_format='%d-%m-%Y %H:%M:%S', strftime=True
     stime = time.mktime(time.strptime(start, dt_format))
     etime = time.mktime(time.strptime(end, dt_format))
     ptime = stime + prop * (etime - stime)
+
     if strftime:
         return time.strftime(dt_format, time.localtime(ptime))
-    else:
-        return time.localtime(ptime)
+    return time.localtime(ptime)
 
 
 def import_example(filepath):
-    print('Reading %s' %(filepath))
+    print(f'Reading {filepath}')
     lines = []
-    with open(filepath) as f:
+    with open(filepath, encoding="utf8") as f:  # pylint: disable=invalid-name
         for line in tqdm(f):
             # Remove patterns
             line = re.sub('[\n]', '', line)
