@@ -6,22 +6,24 @@ Mail        : erdogant@gmail.com, oliver@sensibly.nl
 Github      : https://github.com/d3blocks/d3blocks
 License     : GPL3
 """
-from ismember import ismember
-import colourmap
-import numpy as np
 import os
-from shutil import copyfile
+import numpy as np
+
 from clusteval import clusteval
+from ismember import ismember
+
+import colourmap
 
 try:
     from .. utils import set_path, set_labels, write_html_file
-except:
+except ImportError:
     from utils import set_path, set_labels, write_html_file
 
 
 # %% Set configuration properties
-def set_config(config={}, **kwargs):
+def set_config(config=None, **kwargs):
     """Set the default configuration setting."""
+    config = config or None
     logger = kwargs.get('logger', None)
     config['chart'] ='Heatmap'
     config['title'] = kwargs.get('title', 'Heatmap - D3blocks')
@@ -52,7 +54,7 @@ def set_config(config={}, **kwargs):
 
 
 # %% Node properties
-def set_node_properties(df, **kwargs):
+def set_node_properties(df, **kwargs):  # pylint: disable=invalid-name
     """Set the node properties.
 
     Parameters
@@ -91,13 +93,13 @@ def set_node_properties(df, **kwargs):
     return dict_labels
 
 
-def set_properties(df, config, node_properties, logger=None):
+def set_properties(df, config, node_properties, logger=None):  # pylint: disable=invalid-name
     # Rescale data
     if config['vmax'] is not None:
         df = _scale(df, vmax=config['vmax'], make_round=False, logger=logger)
     if config['vmax'] is None:
         config['vmax'] = np.max(df['weight'].values)
-        logger.debug('Set vmax: %.0g.' %(config['vmax']))
+        logger.debug('Set vmax: %.0g.' %(config['vmax']))  # pylint: disable=consider-using-f-string
 
     # Prepare the data
     json_data = get_data_ready_for_d3(df, node_properties)
@@ -107,16 +109,17 @@ def set_properties(df, config, node_properties, logger=None):
     return html
 
 
-def color_on_clusterlabel(adjmat, df, node_properties, config, logger):
+def color_on_clusterlabel(adjmat, df, node_properties, config, logger):  # pylint: disable=invalid-name
     # Default is all cluster labels are the same
     node_properties['classlabel'] = np.zeros(node_properties.shape[0]).astype(int)
 
     if config['classlabel']=='cluster':
         # Cluster the nodes
-        ce = clusteval(**config['cluster_params'])
+        ce = clusteval(**config['cluster_params'])  # pylint: disable=invalid-name
         results = ce.fit(adjmat.values)
-        Iloc, idx = ismember(node_properties['label'].values, adjmat.index.values)
+        Iloc, idx = ismember(node_properties['label'].values, adjmat.index.values)  # pylint: disable=invalid-name
         if np.any(~Iloc):
+            # pylint: disable=consider-using-f-string
             logger.error('Feature name(s): %s can not be used. Hint: Remove special characters. <return>' %(df.index.values[~np.isin(np.arange(0, df.shape[0]), idx)]))
             return None
         node_properties['classlabel'] = np.zeros(node_properties.shape[0]).astype(int)
@@ -131,7 +134,7 @@ def color_on_clusterlabel(adjmat, df, node_properties, config, logger):
     return node_properties
 
 # %% Scaling
-def _scale(X, vmax=100, make_round=True, logger=None):
+def _scale(X, vmax=100, make_round=True, logger=None):  # pylint: disable=invalid-name
     """Scale data.
 
     Description
@@ -180,9 +183,9 @@ def write_html(json_data, config, logger=None):
 
     """
     # Check path
-    dirpath, filename = None, ''
+    _, filename = None, ''
     if config['filepath'] is not None:
-        dirpath, filename = os.path.split(config['filepath'])
+        _, filename = os.path.split(config['filepath'])
 
     # Get path to files
     d3_script = os.path.abspath(os.path.join(config['curpath'], 'heatmap/d3js/heatmap.html.j2'))
@@ -205,7 +208,7 @@ def write_html(json_data, config, logger=None):
     return html
 
 
-def get_data_ready_for_d3(df, node_properties):
+def get_data_ready_for_d3(df, node_properties):  # pylint: disable=invalid-name
     """Convert the source-target data into d3 compatible data.
 
     Description
